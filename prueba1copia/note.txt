@@ -1,0 +1,177 @@
+objetos de usuario:
+
+nombre
+apellido
+nombre de ususario
+contraseña
+tipo de ususario
+dni
+correo
+domicillo
+    -->calle1
+    -->calle2
+    -->numero
+    -->ruta
+    -->km
+    -->numero de departamento
+    -->piso
+    -->ciudad
+        -->provincia
+        -->localidad
+        -->departamento
+
+
+objeto de producto:
+
+nombre 
+marca
+fecha de vencimiento
+precio 
+stock
+descripcion
+descuento
+
+
+    def creando_tablas(self):
+
+        sql_create_comprobante_table = """CREATE TABLE IF NOT EXISTS comprobante (
+                                        id_comprobante INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        tipo VARCHAR,
+                                        fecha VARCHAR,
+                                        id_usuario INTEGER
+                                    ); """
+
+        sql_create_descuento_table = """ CREATE TABLE IF NOT EXISTS descuento (
+                                        id_descuento integer PRIMARY KEY AUTOINCREMENT,
+                                        porcentaje FLOAT
+                                    ); """
+
+        sql_create_tipo_table = """ CREATE TABLE IF NOT EXISTS tipo (
+                                        id_tipo integer PRIMARY KEY AUTOINCREMENT,
+                                        descripcion VARCHAR,
+                                        id_descuento INTEGER,
+                                        FOREIGN KEY (id_descuento) REFERENCES descuento(id_descuento)
+                                    ); """
+
+        sql_create_productos_table = """ CREATE TABLE IF NOT EXISTS productos (
+                                        id_producto INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        nombre VARCHAR,
+                                        marca VARCHAR,
+                                        fecha_vencimiento VARCHAR,
+                                        precio INTEGER,
+                                        stock INTEGER,
+                                        id_tipo INTEGER,
+                                        FOREIGN KEY (id_tipo) REFERENCES tipo(id_tipo)
+                                    ); """
+
+        sql_create_detalles_table = """ CREATE TABLE IF NOT EXISTS detalles (
+                                        id_detalle INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        id_comprobante INTEGER,
+                                        id_producto INTEGER,
+                                        FOREIGN KEY (id_comprobante) REFERENCES comprobante (id_comprobante),
+                                        FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+                                    ); """
+
+        sql_create_ciudad_table = """ CREATE TABLE IF NOT EXISTS ciudad (
+                                        id_ciudad INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        provincia VARCHAR,
+                                        localidad VARCHAR,
+                                        departamento VARCHAR
+                                    );"""
+
+        sql_create_domicillo_table = """ CREATE TABLE IF NOT EXISTS domicillo (
+                                        id_domicillo INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        calle1 VARCHAR NOT NULL,
+                                        calle2 VARCHAR,
+                                        numero INTEGER NOT NULL,
+                                        ruta INTEGER,
+                                        km INTEGER,
+                                        num_depa INTEGER,
+                                        piso INTEGER,
+                                        id_ciudad INTEGER,
+                                        FOREIGN KEY (id_ciudad) REFERENCES ciudad (id_ciudad)
+                                    );"""
+
+        sql_create_usuarios_table = """ CREATE TABLE IF NOT EXISTS usuarios (
+                                        id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                                        nombre VARCHAR,
+                                        apellido VARCHAR,
+                                        email VARCHAR,
+                                        dni VARCHAR,
+                                        contraseña VARCHAR,
+                                        id_domicillo INTEGER,
+                                        FOREIGN KEY (id_domicillo) REFERENCES domicillo (id_domicillo)
+                                    );"""
+
+        # create a database connection
+        
+
+        # create tables
+        if self.conexion is not None:
+            # create projects table
+            list_table = [
+                "comprobante",
+                "descuento",
+                "tipo",
+                "productos",
+                "detalles",
+                "ciudad",
+                "domicillo",
+                "usuarios"
+            ]
+            # create projects table
+            for table in list_table:
+                create_table_sql = eval(f"sql_create_{table}_table")
+                try:
+                    cursor = self.conexion.cursor()
+                    cursor.execute(create_table_sql)
+                except Error as e:
+                    print(e)
+            print("Tablas creadas")
+        else:
+            print("Error! cannot create the database connection.")
+
+
+            """ ("Pimienta - Pimentón","Húngarro","24/5/2022",247.43,121,61),
+                    ("Gaseosa - naranja","Chili Powder","5/27/2022",278.31,58,62),
+                    ("Pollo - Pierna","Frescolin","12/11/2021",183.28,56,63),
+                    ("salsa - barbacoa","Clavo estero","5/4/2022",70.85,129,64),
+                    ("Vino - Rosa","Jackson Triggs Okonagan","5/2/2022",196.04,44,65),
+                    ("Uvas - Rojas","la bodega","17/8/2022",256.91,50,66),
+                    ("Naranja","Navel","31/12/2021",291.00,47,67),
+                    ("Brandy - Naranja","Mc Guiness","8/22/2022",276.70,152,68),
+                    ("Mantecol","georgalos","6/5/2022",58.92,137,69),
+                    ("Mostaza - Paquete individual","mostazza","8/5/2022",81.27,178,70),
+                    ("Salsa - Bernaise","sandeer","15/1/2022",164.96,132,71),
+                    ("Pan - Maíz Muffaleta","pandemin","30/7/2022",203.64,41,72),
+                    ("Pimiento - Paprika","laro","24/5/2022",247.43,121,73),
+                    ("Chili en Polvo Mexicano","el macho","27/5/2022",278.31,58,74),
+                    ("Pollo - pechuga","Frescolin","11/12/2021",183.28,56,75),
+                    ("leche","Clavos esteros","5/4/2022",70.85,129,76),
+                    ("Vino - Blanco","Jackson Trigan","2/5/2022",196.04,44,77),
+                    ("Uvas - Rubia","la cosecha","8/17/2022",256.91,50,78),
+                    ("Naranjas","la cosecha","12/31/2021",291.00,47,79),
+                    ("Brandy - manzana","Mc Guiness","8/22/2022",276.70,152,80),
+                    ("Mostaza - Paquete individual","la sabroza","8/5/2022",81.27,178,81),
+                    ("Salsa - tomate","golfterr","15/1/2022",164.96,132,82),
+                    ("Pan - cevada","Bimbo","30/7/2022",203.64,41,83)"""
+
+
+    pk detalles (es lo que ve el admin ver todo lo que compran los clientes)
+    |
+    |-->fk-->comprobante
+    |    |-->  fecha y Hora:
+    |    |
+    |    |-->fk-->usuario   (que cliente compro)
+    |       |  -->nombre de usuario:  
+    |
+    |-->fk-->productos (lista de compra del cliente)
+    |    |  -->nombre:
+    |    |  -->marca:
+    |    |  -->precio:
+    |    |  -->descuento:  
+    |
+    |-->cantidad:
+         
+               
+
